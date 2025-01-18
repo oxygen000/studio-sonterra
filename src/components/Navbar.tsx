@@ -84,7 +84,7 @@ export default function Navbar() {
   return (
     <header className={`bg-white dark:bg-[#1a233d] shadow-md text-gray-800 dark:text-white`} ref={headerRef}>
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">My Store</h1>
+       <Link href="/" className="text-yellow-400">Studio Sonterra</Link>
 
         {/* Desktop Menu */}
         <nav className="hidden md:block">

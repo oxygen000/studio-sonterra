@@ -1,9 +1,9 @@
-import { NextConfig } from 'next';
+import type { NextConfig } from 'next';
 
-/** @type {NextConfig} */
 const nextConfig: NextConfig = {
+  reactStrictMode: true, // تفعيل الوضع الصارم
   images: {
-    unoptimized: true, // تعطيل تحسين الصور لأن GitHub Pages لا يدعم ذلك
+    domains: ['images.unsplash.com'],    // السماح بتحميل الصور من هذا المضيف
   },
 };
 

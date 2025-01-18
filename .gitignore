@@ -41,3 +41,5 @@ yarn-error.log*
 .idea/             # JetBrains IDEs
 .vscode/           # Visual Studio Code settings
 *.swp              # Vim swap files
+
+.vercel

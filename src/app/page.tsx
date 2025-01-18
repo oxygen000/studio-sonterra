@@ -4,8 +4,7 @@ import React, { useEffect } from 'react';
 import { gsap } from 'gsap';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import Card from '../components/Card';
-
+import Products from './products/page';
 export default function Home() {
   useEffect(() => {
     // تأثير التحريك عند تحميل الصفحة
@@ -48,13 +47,7 @@ export default function Home() {
 
       {/* قائمة المنتجات */}
       <section id="products" className="py-16 container mx-auto px-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-8">Featured Products</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card/>
-          <Card/>
-          <Card/>
-          <Card/>
-        </div>
+        <Products/>
       </section>
 
       {/* التذييل */}
