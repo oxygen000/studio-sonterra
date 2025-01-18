@@ -1,28 +1,44 @@
-import mongoose from "mongoose";
-import dotenv from "dotenv";
+// src/lib/dbConnect.ts
+import mongoose, { Mongoose } from 'mongoose';
 
-// تحميل متغيرات البيئة من ملف .env
-dotenv.config();
-
-const MONGO_URL = process.env.MONGO_URL;
+const MONGO_URL = process.env.MONGO_URL as string;
 
 if (!MONGO_URL) {
-  console.error("لم يتم تحديد MONGO_URL في ملف .env");
-  process.exit(1); // إنهاء التطبيق إذا لم يتم تحديد رابط قاعدة البيانات
+  throw new Error('Please define the MONGO_URL environment variable');
 }
 
-const dbconnect = async () => {
-  try {
-    await mongoose.connect(MONGO_URL); // الاتصال بقاعدة البيانات
-    console.log("تم الاتصال بقاعدة البيانات بنجاح");
+// Define a type for the global mongoose cache object
+interface MongooseCache {
+  conn: Mongoose | null;
+  promise: Promise<Mongoose> | null;
+}
 
-    // الوصول إلى المجموعات
-    const collections = mongoose.connection.collections; // الكائن الذي يحتوي على كل المجموعات
-    console.log("المجموعات المتوفرة:", Object.keys(collections));
-  } catch (error) {
-    console.error("فشل الاتصال بقاعدة البيانات:", error.message);
-    process.exit(1); // إنهاء التطبيق في حال فشل الاتصال
+// Use the appropriate type for the global object, avoiding 'any'
+let cached: MongooseCache = (global as { mongoose?: MongooseCache }).mongoose;
+
+if (!cached) {
+  cached = (global as { mongoose?: MongooseCache }).mongoose = { conn: null, promise: null };
+}
+
+async function dbConnect() {
+  // If the connection is already established, return the cached connection
+  if (cached.conn) {
+    return cached.conn;
   }
-};
 
-export default dbconnect;
+  // If the connection is not established, create a new one
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+    };
+
+    cached.promise = mongoose.connect(MONGO_URL, opts).then((mongoose) => {
+      return mongoose;
+    });
+  }
+
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
+
+export default dbConnect;

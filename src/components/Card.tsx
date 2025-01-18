@@ -88,7 +88,6 @@ function Card() {
                   className="flex items-center bg-yellow-400 text-white py-2 px-4 rounded-full font-semibold hover:bg-yellow-300 transition duration-200 ease-in-out"
                 >
                   <FaShoppingCart className="mr-2" />
-                  Add to Cart
                 </button>
               </div>
             </div>
