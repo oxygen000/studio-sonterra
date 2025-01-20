@@ -19,16 +19,34 @@ const AddProduct = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
+    const { name, price, description, category, stock, image } = formData;
+  
+    if (!name || !price || !category) {
+      alert("Please fill out all required fields: Name, Price, and Category.");
+      return;
+    }
+  
+   
+  
     try {
-      const response = await axios.post("/api/admin/products", formData);
+      const response = await axios.post("/api/admin/products", {
+        name,
+        price: Number(price),
+        description,
+        category,
+        stock: stock ? Number(stock) : 0, // Ensure stock is a number, default to 0 if empty
+        image,
+      });
+  
       alert("Product added successfully!");
       console.log(response.data);
     } catch (error) {
       console.error("Error adding product:", error);
-      alert("Failed to add product.");
-    }
+      alert("Failed to add product. Please try again.");
+    } 
   };
+  
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-4">

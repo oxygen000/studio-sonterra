@@ -1,31 +1,49 @@
-// /pages/api/products.ts
-import { NextResponse } from "next/server";
-import dbConnect from "../../../../lib/db";
-import Product from "../../../../models/Product";
+import { NextRequest, NextResponse } from 'next/server';
+import dbConnect from '../../../../lib/db';  // تأكد من أنك قد أنشأت اتصال مع MongoDB في lib/dbConnect.ts
+import Product from '../../../../models/Product';  // تأكد من أن لديك نموذج المنتج في models/Product.ts
 
-// معالجة طلب POST
-export async function POST(req: Request) {
-  await dbConnect();
-
+// POST - إضافة منتج
+export async function POST(req: NextRequest) {
   try {
-    const body = await req.json(); // قراءة بيانات المنتج من الطلب
-    const newProduct = await Product.create(body); // إنشاء المنتج في قاعدة البيانات
-    return NextResponse.json({ success: true, product: newProduct }, { status: 201 });
+    await dbConnect();
+
+    const { name, price, description, category, stock, image } = await req.json();
+    
+    console.log("Received data:", { name, price, description, category, stock, image });
+
+    if (!name || !price || !category) {
+      return NextResponse.json({ message: "Name, Price, and Category are required!" }, { status: 400 });
+    }
+
+    const newProduct = new Product({
+      name,
+      price,
+      description,
+      category,
+      stock,
+      image,
+    });
+
+    await newProduct.save();
+
+    return NextResponse.json({ message: "Product added successfully!", product: newProduct }, { status: 201 });
   } catch (error) {
     console.error("Error adding product:", error);
-    return NextResponse.json({ success: false, error: "Failed to add product" }, { status: 500 });
+    return NextResponse.json({ message: "Failed to add product, please try again." }, { status: 500 });
   }
 }
 
-// معالجة طلب GET (للحصول على جميع المنتجات)
-export async function GET() {
-  await dbConnect();
 
+// GET - لاسترجاع المنتجات
+export async function GET(req: NextRequest) {
   try {
-    const products = await Product.find(); // جلب جميع المنتجات
-    return NextResponse.json({ success: true, products }, { status: 200 });
+    await dbConnect();  // تأكد من أنك متصل بـ MongoDB
+    
+    const products = await Product.find({});  // استرجاع جميع المنتجات
+
+    return NextResponse.json(products, { status: 200 });
   } catch (error) {
     console.error("Error fetching products:", error);
-    return NextResponse.json({ success: false, error: "Failed to fetch products" }, { status: 500 });
+    return NextResponse.json({ message: "Failed to fetch products, please try again." }, { status: 500 });
   }
 }

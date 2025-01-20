@@ -3,7 +3,7 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   reactStrictMode: true, // تفعيل الوضع الصارم
   images: {
-    domains: ['plus.unsplash.com','i.pinimg.com'],    // السماح بتحميل الصور من هذا المضيف
+    domains: ['plus.unsplash.com','i.pinimg.com','images.unsplash.com','images.pexels.com'],    // السماح بتحميل الصور من هذا المضيف
   },
 };
 
