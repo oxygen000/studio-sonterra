@@ -715,11 +715,11 @@ video {
 .animate-spin {
   animation: spin 1s linear infinite;
 }
-.cursor-not-allowed {
-  cursor: not-allowed;
-}
 .cursor-pointer {
   cursor: pointer;
+}
+.cursor-not-allowed {
+  cursor: not-allowed;
 }
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -1852,12 +1852,12 @@ video {
   animation: spin 1s linear infinite;
 }
 
-.cursor-not-allowed {
-  cursor: not-allowed;
-}
-
 .cursor-pointer {
   cursor: pointer;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
 }
 
 .grid-cols-1 {
