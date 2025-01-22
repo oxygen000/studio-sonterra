@@ -13,8 +13,8 @@ interface MongooseCache {
   promise: Promise<Mongoose> | null;
 }
 
-// Use the appropriate type for the global object, avoiding 'any'
-let cached: MongooseCache = (global as { mongoose?: MongooseCache }).mongoose;
+// Initialize cached with a default value
+let cached: MongooseCache = (global as { mongoose?: MongooseCache }).mongoose || { conn: null, promise: null };
 
 if (!cached) {
   cached = (global as { mongoose?: MongooseCache }).mongoose = { conn: null, promise: null };

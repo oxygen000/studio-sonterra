@@ -75,12 +75,12 @@ const SignUp = () => {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
-  
+
     if (name === "password") {
       validatePassword(value);
     }
-  
-    // تحقق من أن firstname و lastname يحتويان فقط على أحرف ومسافات
+
+    // التحقق من أن firstname و lastname يحتويان فقط على أحرف ومسافات
     if (name === "firstname" || name === "lastname") {
       const lettersOnly = /^[A-Za-z\s]+$/;
       if (!lettersOnly.test(value) && value !== "") {
@@ -88,7 +88,7 @@ const SignUp = () => {
         return;
       }
     }
-  
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -167,7 +167,7 @@ const SignUp = () => {
           confirmPassword: "",
           phone: "",
         });
-        router.push("/");
+        router.push("/login");
       } else {
         toast.error(data.message || "Registration failed.");
       }
@@ -180,19 +180,28 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-cover bg-center" style={{ backgroundImage: "url('/back1.jpg')", backgroundSize: "cover" }}>
+    <div
+      className="flex justify-center items-center min-h-screen bg-cover bg-center"
+      style={{ backgroundImage: "url('/back1.jpg')" }}
+    >
       {isFormVisible && (
-        <form onSubmit={handleSubmit} className="form flex flex-col gap-4 bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
-          <h2 className="title text-3xl font-semibold text-royalblue mb-4 text-center">Sign Up</h2>
-          <div className="message text-sm text-gray-600 text-center mb-6">Sign up now and get full access to our app.</div>
+        <form
+          onSubmit={handleSubmit}
+          className="form bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-2xl w-full max-w-md border border-white/20"
+        >
+          <h2 className="title text-3xl font-bold text-gray-800 mb-6 text-center">Sign Up</h2>
+          <p className="message text-sm text-gray-600 text-center mb-8">
+            Create an account to get started.
+          </p>
 
           {/* Firstname and Lastname */}
-          <div className="flex gap-4">
-            <label className="field-container flex-1">
-              <div className="flex items-center relative">
-                <FaUser className="absolute left-3 text-gray-500" />
+          <div className="flex gap-4 mb-6">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+              <div className="relative">
+                <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 <input
-                  className="field-input pl-10"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   type="text"
                   placeholder="First Name"
                   name="firstname"
@@ -202,12 +211,13 @@ const SignUp = () => {
                 />
               </div>
               {!formData.firstname && <p className="text-red-500 text-sm mt-1">First name is required.</p>}
-            </label>
-            <label className="field-container flex-1">
-              <div className="flex items-center relative">
-                <FaUser className="absolute left-3 text-gray-500" />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+              <div className="relative">
+                <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 <input
-                  className="field-input pl-10"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   type="text"
                   placeholder="Last Name"
                   name="lastname"
@@ -217,15 +227,16 @@ const SignUp = () => {
                 />
               </div>
               {!formData.lastname && <p className="text-red-500 text-sm mt-1">Last name is required.</p>}
-            </label>
+            </div>
           </div>
 
           {/* Email */}
-          <label className="field-container">
-            <div className="flex items-center relative">
-              <FaEnvelope className="absolute left-3 text-gray-500" />
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+            <div className="relative">
+              <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
               <input
-                className="field-input pl-10"
+                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 type="email"
                 placeholder="Email"
                 name="email"
@@ -237,14 +248,15 @@ const SignUp = () => {
             {formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) && (
               <p className="text-red-500 text-sm mt-1">Invalid email address.</p>
             )}
-          </label>
+          </div>
 
           {/* Phone */}
-          <label className="field-container">
-            <div className="flex items-center relative">
-              <span className="absolute left-3 text-xl text-green-500">🇪🇬</span>
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-xl text-green-500">🇪🇬</span>
               <input
-                className="field-input pl-12"
+                className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 type="text"
                 placeholder="Phone Number"
                 name="phone"
@@ -258,14 +270,15 @@ const SignUp = () => {
                 Invalid phone number. Please enter a valid Egyptian phone number (e.g., 01234567890 or +201234567890).
               </p>
             )}
-          </label>
+          </div>
 
           {/* Password */}
-          <label className="field-container">
-            <div className="flex items-center relative">
-              <FaLock className="absolute left-3 text-gray-500" />
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+            <div className="relative">
+              <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
               <input
-                className="field-input pl-10"
+                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 type="password"
                 placeholder="Password"
                 name="password"
@@ -287,14 +300,15 @@ const SignUp = () => {
                 </li>
               </ul>
             )}
-          </label>
+          </div>
 
           {/* Confirm Password */}
-          <label className="field-container">
-            <div className="flex items-center relative">
-              <FaLock className="absolute left-3 text-gray-500" />
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+            <div className="relative">
+              <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
               <input
-                className="field-input pl-10"
+                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 type="password"
                 placeholder="Confirm Password"
                 name="confirmPassword"
@@ -306,31 +320,46 @@ const SignUp = () => {
             {formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword && (
               <p className="text-red-500 text-sm mt-1">Passwords do not match.</p>
             )}
-          </label>
+          </div>
 
           {/* Submit Button */}
           <button
             type="submit"
-            className={`submit-button ${loading ? "bg-gray-400" : "bg-royalblue"} text-white py-2 rounded-md transition-all`}
+            className={`w-full py-3 rounded-lg text-white font-semibold ${
+              loading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+            } transition-all flex justify-center items-center`}
             disabled={loading}
           >
-            {loading ? "Loading..." : "Sign Up"}
+            {loading ? (
+              <div className="animate-spin rounded-full h-6 w-6 border-t-4 border-yellow-400 border-solid"></div>
+            ) : (
+              "Sign Up"
+            )}
           </button>
 
           {/* Social Login */}
-          <div className="social-login flex justify-center gap-4 my-4">
-            <button className="social-button bg-blue-600 flex items-center gap-2 px-4 py-2 rounded-md text-white">
-              <FaFacebook /> Facebook
-            </button>
-            <button className="social-button bg-red-600 flex items-center gap-2 px-4 py-2 rounded-md text-white">
-              <FaGoogle /> Google
-            </button>
+          <div className="mt-6">
+            <p className="text-sm text-gray-600 text-center mb-4">Or sign up with</p>
+            <div className="flex justify-center gap-4">
+              <button
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all"
+                type="button"
+              >
+                <FaFacebook /> Facebook
+              </button>
+              <button
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-all"
+                type="button"
+              >
+                <FaGoogle /> Google
+              </button>
+            </div>
           </div>
 
           {/* Login Link */}
-          <p className="signin text-center text-sm text-black mt-4">
+          <p className="text-sm text-gray-600 text-center mt-6">
             Already have an account?{" "}
-            <Link href="/login" className="text-royalblue hover:underline text-yellow-300">
+            <Link href="/login" className="text-blue-600 hover:underline font-semibold">
               Login
             </Link>
           </p>

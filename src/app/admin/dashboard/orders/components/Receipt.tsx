@@ -3,8 +3,17 @@
 import React from "react";
 import JsBarcode from "jsbarcode";
 
-const Receipt = ({ order }) => {
-  const barcodeRef = React.useRef(null);
+// تعريف واجهة للطلب
+interface Order {
+  id: number;
+  customer: string;
+  date: string;
+  total: number;
+  status: string;
+}
+
+const Receipt = ({ order }: { order: Order }) => {
+  const barcodeRef = React.useRef<SVGSVGElement | null>(null);
 
   React.useEffect(() => {
     if (barcodeRef.current) {

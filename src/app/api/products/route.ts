@@ -27,7 +27,7 @@ export async function GET() {
   try {
     // الاتصال بقاعدة البيانات
     if (mongoose.connection.readyState !== 1) {
-      await mongoose.connect(MONGO_URL);
+      await mongoose.connect(MONGO_URL as string); // استخدام as string لتجنب الخطأ
     }
 
     const products = await Product.find();

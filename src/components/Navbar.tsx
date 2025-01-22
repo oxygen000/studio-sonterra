@@ -1,9 +1,11 @@
+// src/components/Navbar/Navbar.tsx
 "use client";
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { useAuth } from "../context/AuthContext"; // استيراد useAuth
 import Link from "next/link";
+import { FaShoppingCart, FaUser } from "react-icons/fa";
 
 export default function Navbar() {
   const headerRef = useRef<HTMLElement | null>(null);
@@ -82,11 +84,11 @@ export default function Navbar() {
 
   return (
     <header
-      className="bg-white dark:bg-[#1a233d] shadow-md text-gray-800 dark:text-white"
       ref={headerRef}
+      className="bg-white dark:bg-[#1a233d] shadow-md text-gray-800 dark:text-white sticky top-0 z-50"
     >
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <Link href="/" className="text-yellow-400 text-2xl">
+        <Link href="/" className="text-yellow-400 text-2xl font-bold">
           Studio Sonterra
         </Link>
 
@@ -102,7 +104,7 @@ export default function Navbar() {
               >
                 <a
                   href={`#${link.toLowerCase()}`}
-                  className="text-gray-600 hover:text-gray-900 dark:hover:text-gray-300"
+                  className="text-gray-600 hover:text-gray-900 dark:hover:text-gray-300 transition-colors duration-300"
                 >
                   {link}
                 </a>
@@ -111,25 +113,25 @@ export default function Navbar() {
           </ul>
         </nav>
 
-        {/* Desktop: Dark Mode and User/Cart Buttons */}
-        <div className="items-center gap-4 md:block hidden">
+        {/* Desktop: Cart and User Buttons */}
+        <div className="hidden md:flex items-center gap-4">
           <Link
             href="/cart"
-            className="text-gray-600 hover:text-gray-900 dark:hover:text-gray-300 text-2xl"
+            className="text-gray-600 hover:text-gray-900 dark:hover:text-gray-300 text-2xl transition-colors duration-300"
           >
-            🛒
+            <FaShoppingCart />
           </Link>
           {isLoggedIn ? (
             <Link
               href="/profile"
-              className="text-gray-600 hover:text-gray-900 dark:hover:text-gray-300 text-2xl"
+              className="text-gray-600 hover:text-gray-900 dark:hover:text-gray-300 text-2xl transition-colors duration-300"
             >
-              👤
+              <FaUser />
             </Link>
           ) : (
             <Link
               href="/login"
-              className="text-gray-600 hover:text-gray-900 dark:hover:text-gray-300 text-2xl"
+              className="bg-yellow-400 text-white px-4 py-2 rounded-lg hover:bg-yellow-500 transition-colors duration-300"
             >
               Login
             </Link>
@@ -142,38 +144,36 @@ export default function Navbar() {
             href="/cart"
             className="text-gray-600 dark:text-white text-2xl"
           >
-            🛒
+            <FaShoppingCart />
           </Link>
           {isLoggedIn ? (
             <Link
               href="/profile"
               className="text-gray-600 dark:text-white text-2xl"
             >
-              👤
+              <FaUser />
             </Link>
           ) : (
             <Link
               href="/login"
-              className="text-gray-600 dark:text-white text-2xl"
+              className="bg-yellow-400 text-white px-4 py-2 rounded-lg hover:bg-yellow-500 transition-colors duration-300"
             >
               Login
             </Link>
           )}
           <button
             onClick={toggleMenu}
-            className="text-gray-600 dark:text-white"
+            className="text-gray-600 dark:text-white text-2xl"
             ref={menuIconRef}
           >
-            <span className="text-2xl">☰</span>
+            <span>☰</span>
           </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden ${
-          isMenuOpen ? "block" : "hidden"
-        } absolute top-0 left-0 w-full bg-white dark:bg-[#1a233d] shadow-md py-4`}
+        className={`md:hidden ${isMenuOpen ? "block" : "hidden"} absolute top-0 left-0 w-full bg-white dark:bg-[#1a233d] shadow-md py-4`}
       >
         <div className="flex justify-end px-4">
           <button
@@ -193,7 +193,7 @@ export default function Navbar() {
             >
               <a
                 href={`#${link.toLowerCase()}`}
-                className="text-gray-600 hover:text-gray-900 dark:hover:text-gray-300"
+                className="text-gray-600 hover:text-gray-900 dark:hover:text-gray-300 transition-colors duration-300"
                 onClick={closeMenu}
               >
                 {link}

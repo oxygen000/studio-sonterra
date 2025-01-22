@@ -4,8 +4,17 @@ import React, { useState } from "react";
 import { FaSearch, FaPrint, FaEye } from "react-icons/fa";
 import Receipt from "./components/Receipt"; // استيراد مكون الإيصال
 
+// تعريف واجهة للطلب
+interface Order {
+  id: number;
+  customer: string;
+  date: string;
+  total: number;
+  status: string;
+}
+
 // بيانات الطلبات (يمكن استبدالها بجلب البيانات من API)
-const orders = [
+const orders: Order[] = [
   { id: 1, customer: "محمد أحمد", date: "2023-10-01", total: 150, status: "تم التوصيل" },
   { id: 2, customer: "علي محمود", date: "2023-10-02", total: 200, status: "قيد التوصيل" },
   { id: 3, customer: "سارة خالد", date: "2023-10-03", total: 300, status: "ملغى" },
@@ -14,8 +23,8 @@ const orders = [
 
 export default function Orders() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [printOrder, setPrintOrder] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [printOrder, setPrintOrder] = useState<Order | null>(null);
 
   // تصفية الطلبات بناءً على البحث
   const filteredOrders = orders.filter((order) =>
@@ -23,20 +32,22 @@ export default function Orders() {
   );
 
   // عرض تفاصيل الطلب
-  const handleViewOrder = (order) => {
+  const handleViewOrder = (order: Order) => {
     setSelectedOrder(order);
   };
 
   // طباعة بوليصة الطلب
-  const handlePrintOrder = (order) => {
+  const handlePrintOrder = (order: Order) => {
     setPrintOrder(order);
     setTimeout(() => {
-      const printContents = document.getElementById("printable-receipt").innerHTML;
+      const printContents = document.getElementById("printable-receipt")?.innerHTML;
       const originalContents = document.body.innerHTML;
 
-      document.body.innerHTML = printContents;
-      window.print();
-      document.body.innerHTML = originalContents;
+      if (printContents) {
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+      }
 
       setPrintOrder(null);
     }, 500); // تأخير الطباعة لضمان تحميل الباركود

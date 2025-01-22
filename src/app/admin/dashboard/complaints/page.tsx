@@ -3,8 +3,17 @@
 import React, { useState } from "react";
 import { FaSearch, FaReply, FaCheckCircle } from "react-icons/fa";
 
+// تعريف واجهة للشكوى
+interface Complaint {
+  id: number;
+  name: string;
+  email: string;
+  message: string;
+  status: string;
+}
+
 // بيانات الشكاوي (يمكن استبدالها بجلب البيانات من API)
-const complaints = [
+const complaints: Complaint[] = [
   {
     id: 1,
     name: "محمد أحمد",
@@ -30,7 +39,7 @@ const complaints = [
 
 export default function AdminComplaints() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
   const [reply, setReply] = useState("");
 
   // تصفية الشكاوي بناءً على البحث
@@ -39,7 +48,7 @@ export default function AdminComplaints() {
   );
 
   // عرض تفاصيل الشكوى
-  const handleViewComplaint = (complaint) => {
+  const handleViewComplaint = (complaint: Complaint) => {
     setSelectedComplaint(complaint);
   };
 

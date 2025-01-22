@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "es5", // تغيير من ES2017 إلى es5 لتوافق أوسع
     "lib": [
       "dom",
       "dom.iterable",
@@ -8,7 +8,8 @@
     ],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true, // تفعيل الوضع الصارم (strict mode)
+    "forceConsistentCasingInFileNames": true, // إضافة لضمان توافق أسماء الملفات
     "noEmit": true,
     "incremental": true,
     "module": "esnext",
@@ -17,11 +18,22 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "baseUrl": ".", // إضافة لتحديد المسار الأساسي
+    "paths": {
+      "@/*": ["./src/*"] // إضافة لتحديد مسارات الاستيراد
+    },
     "plugins": [
       {
         "name": "next"
       }
-    ]
+    ],
+    "strictNullChecks": true, // تفعيل التحقق من القيم الفارغة
+    "strictFunctionTypes": true, // تفعيل التحقق من أنواع الدوال
+    "strictBindCallApply": true, // تفعيل التحقق من `bind` و `call` و `apply`
+    "strictPropertyInitialization": true, // تفعيل التحقق من تهيئة الخصائص
+    "noImplicitAny": true, // منع الأنواع الضمنية من `any`
+    "noImplicitThis": true, // منع `this` الضمني
+    "alwaysStrict": true // تفعيل الوضع الصارم في جميع الملفات
   },
   "include": [
     "next-env.d.ts",
