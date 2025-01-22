@@ -1,8 +1,10 @@
-import type { Metadata } from "next";
+"use client";
+
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
-import 'tailwindcss/tailwind.css'
-
+import "tailwindcss/tailwind.css";
+import { SessionProvider } from "next-auth/react";
+import { AuthProvider } from "../context/AuthContext"; // استيراد AuthProvider
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,11 +16,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Studio Sonterra",
-  description: "Studio Sonterra is a design and development studio.",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,12 +24,23 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-      <link rel="icon" href="/logo2.png" />
-    </head>
+        <link rel="icon" href="/logo2.png" />
+        <title>Studio Sonterra</title>
+        <meta
+          name="description"
+          content="Studio Sonterra is a design and development studio."
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        {/* SessionProvider لتوفير جلسات next-auth */}
+        <SessionProvider>
+          {/* AuthProvider لتوفير حالة تسجيل الدخول الخاصة بك */}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </SessionProvider>
       </body>
     </html>
   );

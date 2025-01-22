@@ -1,42 +1,99 @@
 import { NextResponse } from 'next/server';
-import bcrypt from 'bcrypt';
-import  connectToDB  from '../../../lib/db';
+import mongoose from 'mongoose';
 import User from '../../../models/User';
+
+// الاتصال بقاعدة البيانات
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URL!, {
+      serverSelectionTimeoutMS: 30000, // زيادة وقت المهلة إلى 30 ثانية
+    });
+    console.log('MongoDB connected successfully');
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    process.exit(1);
+  }
+};
+
+interface RegistrationError {
+  message: string;
+  errors?: Record<string, string>;
+}
+
+interface UserData {
+  firstname: string;
+  lastname: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+}
+
+// التحقق من البيانات المدخلة
+const validateRegistrationData = (data: UserData): void => {
+  const lettersOnly = /^[A-Za-z\s]+$/; // السماح بالأحرف والمسافات
+
+  if (!data.firstname || !lettersOnly.test(data.firstname)) {
+    throw new Error('Firstname can only contain letters and spaces.');
+  }
+
+  if (!data.lastname || !lettersOnly.test(data.lastname)) {
+    throw new Error('Lastname can only contain letters and spaces.');
+  }
+
+  if (!data.confirmPassword) {
+    throw new Error('confirmPassword is required');
+  }
+
+  if (data.password !== data.confirmPassword) {
+    throw new Error('Password and confirm password do not match');
+  }
+
+  const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+  if (!passwordRegex.test(data.password)) {
+    throw new Error('Password must be at least 6 characters long, include at least one uppercase letter, one number, and one special character.');
+  }
+};
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password } = await req.json();
-
     // الاتصال بقاعدة البيانات
-    await connectToDB();
+    await connectDB();
 
-    // التحقق من وجود المستخدم مسبقًا
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return NextResponse.json({ message: 'User already exists' }, { status: 400 });
+    const { firstname, lastname, email, phone, password, confirmPassword } = await req.json();
+
+    console.log("Received data:", { firstname, lastname, email, phone, password, confirmPassword });
+
+    if (!firstname || !lastname || !email || !phone || !password || !confirmPassword) {
+      throw new Error('Missing required fields');
     }
 
-    // تشفير كلمة المرور
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const userData: UserData = { firstname, lastname, email, phone, password, confirmPassword };
+    validateRegistrationData(userData);
 
-    // إنشاء مستخدم جديد
-    const newUser = await User.create({
-      name,
+    const newUser = new User({
+      firstname,
+      lastname,
       email,
-      password: hashedPassword,
+      phone,
+      password,
+      confirmPassword, // سيتم حذف confirmPassword لاحقًا
     });
 
-    return NextResponse.json({
-      message: 'User registered successfully',
-      user: {
-        id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
-      },
-    });
-  } catch (error) {
+    await newUser.save();
+
+    return NextResponse.json({ message: 'User registered successfully' }, { status: 201 });
+  } catch (error: unknown) {
     console.error('Registration error:', error);
-    return NextResponse.json({ message: 'Error registering user' }, { status: 500 });
+
+    if (error instanceof Error) {
+      const registrationError: RegistrationError = {
+        message: error.message,
+        errors: (error as { errors?: Record<string, string> }).errors, // استخدام نوع محدد بدلاً من any
+      };
+      return NextResponse.json({ message: registrationError.message, errors: registrationError.errors }, { status: 400 });
+    } else {
+      return NextResponse.json({ message: 'Registration error', errors: 'An unknown error occurred.' }, { status: 400 });
+    }
   }
 }

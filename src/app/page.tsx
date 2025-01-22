@@ -41,7 +41,7 @@ export default function Home() {
 
       {/* القسم الرئيسي */}
       <section className="bg-gray-800 text-white py-20 text-center">
-        <h1 className="hero-title text-4xl fProductCardont-bold mb-4">Welcome to My Store</h1>
+        <h1 className="hero-title text-4xl fProductCardont-bold mb-4">Welcome to Studio Sonterra</h1>
         <p className="hero-subtitle text-lg">Discover amazing products and great deals!</p>
       </section>
 

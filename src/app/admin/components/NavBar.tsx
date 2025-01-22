@@ -43,6 +43,16 @@ function NavBar() {
                 Users
               </a>
             </li>
+            <li className="mb-4">
+              <a href="/admin/dashboard/complaints" className="hover:underline">
+              User Complaints
+              </a>
+            </li>
+            <li className="mb-4">
+              <a href="/admin/dashboard/settings" className="hover:underline">
+              Settings
+              </a>
+            </li>
             {isLoggedIn && (
               <li className="mb-4">
                 <button

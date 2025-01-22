@@ -1,16 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import Link from "next/link";
-import { FaEnvelope, FaFacebook, FaGoogle, FaLock } from "react-icons/fa"; // استيراد الأيقونات
+import { toast } from "react-hot-toast";
+import { FaEnvelope, FaLock, FaFacebook, FaGoogle } from "react-icons/fa";
+import { useAuth } from "../../context/AuthContext"; // استيراد useAuth
 
 const Login = () => {
-  const [isFormVisible, setIsFormVisible] = useState(false);
-  const [, setIsFieldsVisible] = useState(false);
+  const router = useRouter();
+  const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const { setIsLoggedIn } = useAuth(); // استخدام setIsLoggedIn من AuthContext
 
   useEffect(() => {
-    // تأثير الحركة للنموذج بشكل عام
     gsap.from(".form", {
       opacity: 0,
       y: -50,
@@ -19,105 +28,144 @@ const Login = () => {
       onComplete: () => setIsFormVisible(true),
     });
 
-    // تأثير الحركة للحقول
     gsap.from(".input", {
       opacity: 0,
       x: -50,
       duration: 1.2,
       stagger: 0.3,
       ease: "power2.out",
-      onComplete: () => setIsFieldsVisible(true),
     });
   }, []);
 
-  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
-    gsap.to(event.target.nextElementSibling, {
-      opacity: 0,
-      y: -10,
-      duration: 0.3,
-      ease: "power2.out",
-    });
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    if (event.target.value === "") {
-      gsap.to(event.target.nextElementSibling, {
-        opacity: 1,
-        y: 0,
-        duration: 0.3,
-        ease: "power2.out",
+  const validateForm = (): boolean => {
+    const { email, password } = formData;
+
+    if (!email || !password) {
+      toast.error("Email and password are required.");
+      return false;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Invalid email address.");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e: FormEvent): Promise<void> => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Login successful!");
+
+        // تحديث حالة تسجيل الدخول في AuthContext
+        setIsLoggedIn(true);
+
+        // إعادة تعيين حقول الإدخال
+        setFormData({
+          email: "",
+          password: "",
+        });
+
+        // إعادة التوجيه إلى الصفحة الرئيسية
+        router.push("/");
+      } else {
+        toast.error(data.message || "Login failed.");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-cover bg-center"
-      style={{
-        backgroundImage: "url('/back1.jpg')", // استبدل هذا بالمسار الفعلي للصورة
-        backgroundSize: 'cover',
-      }}
-    >
+    <div className="flex justify-center items-center min-h-screen bg-cover bg-center" style={{ backgroundImage: "url('/back1.jpg')", backgroundSize: "cover" }}>
       {isFormVisible && (
-        <form className="form flex flex-col gap-6 bg-white p-8 rounded-xl shadow-lg w-full max-w-md transform scale-95">
-          <h2 className="title text-3xl font-semibold text-royalblue mb-4 text-center">
-            Login
-          </h2>
-          <div className="message text-sm text-gray-600 text-center mb-6">
-            Welcome back! Please log in to continue.
-          </div>
+        <form onSubmit={handleSubmit} className="form flex flex-col gap-4 bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
+          <h2 className="title text-3xl font-semibold text-royalblue mb-4 text-center">Login</h2>
+          <div className="message text-sm text-gray-600 text-center mb-6">Welcome back! Please log in to continue.</div>
 
-          {/* Email Input */}
-          <label className="relative mb-4">
-            <input
-              className="input w-full p-4 pl-12 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-royalblue transition-all duration-300"
-              type="email"
-              placeholder="Email"
-              required
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-            />
-            <span className="absolute left-3 top-3 text-gray-500 transition-all duration-300">
-              <FaEnvelope className="text-gray-500" />
-            </span>
+          {/* Email */}
+          <label className="field-container">
+            <div className="flex items-center relative">
+              <FaEnvelope className="absolute left-3 text-gray-500" />
+              <input
+                className="field-input pl-10"
+                type="email"
+                placeholder="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            {formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) && (
+              <p className="text-red-500 text-sm mt-1">Invalid email address.</p>
+            )}
           </label>
 
-          {/* Password Input */}
-          <label className="relative mb-4">
-            <input
-              className="input w-full p-4 pl-12 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-royalblue transition-all duration-300"
-              type="password"
-              placeholder="Password"
-              required
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-            />
-            <span className="absolute left-3 top-3 text-gray-500 transition-all duration-300">
-              <FaLock className="text-gray-500" />
-            </span>
+          {/* Password */}
+          <label className="field-container">
+            <div className="flex items-center relative">
+              <FaLock className="absolute left-3 text-gray-500" />
+              <input
+                className="field-input pl-10"
+                type="password"
+                placeholder="Password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
           </label>
 
-          {/* Log In Button */}
+          {/* Submit Button */}
           <button
             type="submit"
-            className="submit py-3 px-4 bg-royalblue rounded-lg text-white bg-yellow-400 hover:bg-yellow-300 transition-all duration-300"
+            className={`submit-button ${loading ? "bg-gray-400" : "bg-royalblue"} text-white py-2 rounded-md transition-all`}
+            disabled={loading}
           >
-            Log In
+            {loading ? "Loading..." : "Log In"}
           </button>
-          
-          {/* Social Media Login */}
+
+          {/* Social Login */}
           <div className="social-login flex justify-center gap-4 my-4">
-            <button className="bg-blue-600 text-white py-2 px-4 rounded-lg flex items-center gap-2">
+            <button className="social-button bg-blue-600 flex items-center gap-2 px-4 py-2 rounded-md text-white">
               <FaFacebook /> Facebook
             </button>
-            <button className="bg-red-600 text-white py-2 px-4 rounded-lg flex items-center gap-2">
+            <button className="social-button bg-red-600 flex items-center gap-2 px-4 py-2 rounded-md text-white">
               <FaGoogle /> Google
             </button>
           </div>
 
           {/* Sign Up Link */}
-          <p className="signin text-center text-sm text-gray-600 mt-4">
+          <p className="signin text-center text-sm text-black mt-4">
             Don&apos;t have an account?{" "}
-            <Link href="/sign-up" className="text-royalblue hover:underline text-yellow-600">
+            <Link href="/sign-up" className="text-royalblue hover:underline text-yellow-400">
               Sign Up
             </Link>
           </p>
